@@ -5,6 +5,7 @@
 #include <iostream>
 #include <queue>
 #include <unordered_map>
+#include <stack>
 using std::forward_list;
 using std::queue;
 using std::list;
@@ -12,6 +13,7 @@ using std::vector;
 using std::cout;
 using std::unordered_map;
 using std::endl;
+using std::stack;
 
 class Graph
 {
@@ -52,7 +54,7 @@ public:
 		}
 	}
 
-	void BFS(int node = -1)
+	void bfs(int node = -1)
 	{
 		queue<int> q;
 		vector<bool> visited(mAdjList.size());
@@ -83,25 +85,64 @@ public:
 		cout << endl;
 	}
 
-	void DFSUtil(int i, vector<bool>& visited)
+	void dfsRecursive(int node = -1)
+	{
+		if (node == -1) node = 0;
+
+		cout << "DFS recursive : " << endl;
+
+		vector<bool> visited(mAdjList.size());
+		for (auto elem : visited) elem = false;
+
+		dfsUtil(node, visited);
+
+		cout << endl;
+	}
+
+	void topologicalSort()
+	{
+		vector<bool> visited(mAdjList.size());
+		for (auto e : visited) e = false;
+
+		cout << "Topological sort: " << endl;
+
+		stack<int> s;
+		for (size_t i = 0; i < mAdjList.size();++i)
+		{
+			if (visited[i] == false)
+			{
+				topologicalSortUtil(i, visited, s);
+			}
+		}
+
+		while (s.empty() == false)
+		{
+			cout << s.top() << " ";
+			s.pop();
+		}
+
+		cout << endl;
+	}
+
+private:
+	void dfsUtil(int i, vector<bool>& visited)
 	{
 		visited[i] = true;
 		cout << i << " ";
 		for (auto elem : mAdjList[i])
 			if (!visited[elem])
-				DFSUtil(elem, visited);
+				dfsUtil(elem, visited);
 	}
 
-	void DFSRecursive(int node = -1)
+	void topologicalSortUtil(int v, vector<bool>& visited, stack<int>& s)
 	{
-		if (node == -1) node = 0;
+		visited[v] = true;
 
-		vector<bool> visited(mAdjList.size());
-		for (auto elem : visited) elem = false;
+		for (auto elem : mAdjList[v])
+			if (!visited[elem])
+				topologicalSortUtil(elem, visited, s);
 
-		DFSUtil(node, visited);
-
-		cout << endl;
+		s.push(v);
 	}
 
 private:
